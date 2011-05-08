@@ -1,0 +1,36 @@
+This is my configuration for GNU Emacs.
+
+I have not attempted to use it with XEmacs; it likely will fail there.
+
+How To Use
+==========
+
+1. Check out the newest version into $HOME/.emacs.d
+
+   FIXME: add in git clone command using github
+
+2. Link $HOME/.emacs to $HOME/.emacs.d/config
+
+   ln -s $HOME/.emacs.d/config $HOME/.emacs
+
+3. Fire up emacs
+
+   $ emacs &
+
+
+Legalese
+========
+
+Copyright (c) 2011 Kevin Kreamer <kevin@kreamer.org>
+
+This project is free software; you can redistribute it and/or modify
+it under the terms of version 2 of the GNU General Public License as
+published by the Free Software Foundation.
+
+This project is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.
+
+Using GNU Emacs, type C-h C-c to bring up a copy of the GPL.
+

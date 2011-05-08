@@ -1,0 +1,611 @@
+;; .emacs (-*- emacs-lisp -*-)
+;; Copyright 2011 (c)  Kevin Kreamer <kevin@kreamer.org>
+;; See README for license and other information
+
+;;; uncomment this line to disable loading of "default.el" at startup
+;; (setq inhibit-default-init t)
+
+;; just get to work - don't show the startup screen
+(set-variable 'inhibit-startup-message t)
+(setq inhibit-splash-screen t)
+
+;; set up scroll parameters
+(setq scroll-conseratively 1)
+(setq scroll-step 1)
+
+;; enable visual feedback on selections
+(setq transient-mark-mode t)
+
+;; default to better frame titles
+(setq frame-title-format
+      (concat  "%b - emacs@" system-name))
+
+;; stop at the end of the file, not just add lines
+(setq next-line-add-newlines nil)
+  
+;; set keybindings
+;; yes, make emacs more like other text editors out there
+(global-set-key [f2] 'execute-extended-command)
+(global-set-key [f3] 'eshell)
+(global-set-key [f4] 'find-grep)
+(global-set-key [f5] 'compile)
+(global-set-key [(meta l)] 'goto-line)
+(global-unset-key [(control l)])
+(global-set-key [(control x) (f)] 'find-file)
+(global-set-key [(control v)] 'yank)
+(global-set-key [(meta v)] 'yank)
+(global-set-key [(control x) (control k)] 'kill-buffer)
+(global-set-key [(control z)] 'undo)
+(global-set-key [(meta z)] 'undo)
+(global-unset-key [(meta w)]) 
+(global-unset-key [(control w)])
+(global-set-key [(meta s)] 'save-buffer)
+(global-set-key [(control f)] 'isearch-forward)
+(global-set-key [(meta f)] 'isearch-forward)
+(global-set-key [(meta x)] 'kill-region)
+(global-set-key [(meta c)] 'copy-region-as-kill)
+(global-unset-key [(control x) (control s)])
+(global-unset-key [(control x) (s)])
+(global-unset-key [(meta o)])
+(global-unset-key [(control v)])
+(global-unset-key [(meta h)])
+
+(define-key text-mode-map [(meta s)] 'save-buffer)
+
+(setq cursor-in-non-selected-windows nil)
+ 
+;; modeline settings
+;; I use a very customized modeline
+(display-time)
+(line-number-mode t)
+(column-number-mode t)
+(display-battery-mode)
+(setq battery-mode-line-format "   %b%p%%")
+(setq-default mode-line-format
+              '(
+                ;; Full memory?
+                "%e"
+
+                " "
+
+                ;; Input info
+                (""
+                 (current-input-method
+                  (:propertize
+                   ("" current-input-method-title)
+                   "%z"
+                   (:eval
+                    (mode-line-eol-desc)))))
+
+                ;; Client info
+                (""
+                 (:eval
+                  (if
+                      (frame-parameter nil 'client'
+                                       "@" ""))))
+              
+                ;; Buffer modified?
+                "%1*%1+"
+
+                " "
+                
+                ;; Remote?
+                "%1@"
+
+                "   "
+
+                ;; Frame identification
+                (:eval
+                 (mode-line-frame-control))
+
+                ;; Buffer identification
+                "%12b"
+
+                ;; Position
+                (10 "%p")
+                " "
+
+                (vc-mode vc-mode)
+                "    "
+
+                ;; Enabled modes
+                "%["
+                ""
+                (:propertize ("" mode-name))
+                ("" mode-line-process)
+                (:propertize ("" minor-mode-alist))
+                "%n"
+                ""
+                "%]"
+
+                "        "
+
+                (which-func-mode
+                 ("" which-func-format
+                  "  " 0 2))
+                (global-mode-string
+                 ("" global-mode-string
+                  "  "))
+                "   "
+
+                "(%l,%c)"
+                
+                " "
+
+                ;; ;; Screen size
+                ;; (:eval (number-to-string (screen-width)))
+                ;; "x"
+                ;; (:eval (number-to-string (screen-height)))
+))
+
+
+;; backup files elsewhere
+(defun make-backup-file-name (file)
+  (concat "~/.emacs.d/backups/" (file-name-nondirectory file) "~"))
+
+(set-default-font "-*-liberation mono-*-r-*-*-*-100-*-*-*-*-*-*")
+
+(set-scroll-bar-mode 'nil)
+
+;; startup size and location
+(if window-system
+    (setq default-frame-alist 
+          '((width . 140)
+            (height . 40)
+            (top . 0)
+            (left . 0)
+            (cursor-color . "yellow"))))
+
+(menu-bar-mode -1)
+
+;; why type out 'yes' or 'no' every time?
+(fset 'yes-or-no-p 'y-or-n-p)
+
+;; set-up load paths
+(setq load-path (cons "~/.emacs.d/lisp/" load-path))
+
+;; Info
+(require 'info)
+
+;; Dictionary
+(setq ispell-personal-dictionary "~/.emacs.d/dictionary")
+
+;; eshell
+(setq eshell-directory-name "~/.emacs.d/eshell/")
+
+;; mail
+(setq message-auto-save-directory "~/.emacs.d/mail/drafts/")
+(setq message-directory "~/.emacs.d/mail/")
+(setq message-generate-headers-first t)
+(setq gnus-init-file "~/.emacs.d/gnus")
+
+;; dired
+(require 'dired)
+
+;; Syntax highlighting is all good
+;; turn on font-lock mode
+(when (fboundp 'global-font-lock-mode)
+  (global-font-lock-mode t)
+  (setq font-lock-maximum-decoration t))
+(setq font-lock-mode-maximum-decoration t)
+(setq font-lock-message-threshold nil)
+(setq font-lock-verbose nil)
+(setq font-lock-auto-fontify t)
+(setq font-lock-maximum-size nil)
+
+;; turn on automagic (de)compression
+(auto-compression-mode 1)
+
+;; tabstop to 4, with spaces only
+(setq-default tab-width 4)
+(setq-default indent-tabs-mode nil)
+
+(setq auto-mode-alist
+      (append
+       '(
+         ("\\.php" . php-mode)
+         ("\\.css" . css-mode)
+         ("\\.java$" . jde-mode)
+         ("\\.js$" . javascript-mode)
+         ("\\.json" . json-mode)
+         ) auto-mode-alist))
+
+(defalias 'string-replace 'replace-string)
+(defalias 'regexp-replace 'replace-regexp)
+
+(add-hook 'sgml-mode-hook
+          (lambda ()
+            (auto-fill-mode nil)))
+
+(require 'json-mode)
+
+
+;; misc settings
+(temp-buffer-resize-mode 't)
+(blink-cursor-mode -1)
+(setq display-buffer-reuse-frames 't)
+(setq default-indicate-empty-lines 't)
+(auto-image-file-mode 1)
+(setq-default truncate-lines t)
+
+(add-hook 'message-mode-hook 'turn-on-auto-fill)
+(setq text-mode-hook '(lambda nil (setq fill-column 72) (auto-fill-mode 1)))
+
+(tool-bar-mode nil)
+
+;; Abbreviations
+(setq-default abbrev-mode t)
+(setq abbrev-file-name "~/.emacs.d/abbrevs")
+(read-abbrev-file "~/.emacs.d/abbrevs")
+(setq save-abbrevs t)
+
+(pending-delete-mode t)
+
+;(desktop-save-mode 1)
+(savehist-mode 1)
+
+;; ;;set up persistent.el 
+;; ;;to remember histories across emacs sessions
+;; (setq persistent-session-list '(read-expression-history
+;;              extended-command-history
+;;              find-tag-history
+;;              query-replace-history
+;;              grep-history
+;;              file-name-history
+;;              compile-history
+;;              kill-ring
+;;              replace-string-history
+;;              replace-regex-history
+;;              query-replace-regex-history
+;;              minibuffer-history
+;;              shell-command-history
+;;              buffer-name-history
+;;              find-file-history
+;;              ))
+;; (require 'persistent)
+;; (persistent-session-load-from-alist)
+;; (setq persistent-session-size 500)
+
+;; (require 'anything)
+
+(server-start)
+
+;;; Jump to matching parens
+(defun goto-match-paren (arg)
+  "Go to the matching parenthesis if on parenthesis"
+  (interactive "p")
+  (cond ((looking-at "\\s\(") (forward-list 1) (backward-char 1))
+        ((looking-at "\\s\)") (forward-char 1) (backward-list 1))))
+
+(require 'gnus)
+(setq gnus-inhibit-startup_message 1)
+
+;; Java development
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp/jde/lisp"))
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp/cedet/common"))
+(load-file (expand-file-name "~/.emacs.d/lisp/cedet/common/cedet.el"))
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp/elib"))
+
+(require 'jde)
+
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp/ecb"))
+
+;; eshell
+(setq eshell-visual-commands 
+      '("vi" "screen" "top" "less" "more" "lynx" "ncftp" "pine" "tin" "trn" "elm" "mutt"))
+
+(defun eshell/clear ()
+  "Clear the eshell buffer."
+  (interactive)
+  (let ((inhibit-read-only t))
+    (erase-buffer)))
+
+(require 'tail)
+
+;; (add-hook 'jde-mode-hook
+;;           (lambda ()
+;;             (c-set-style "k&r")
+;;             (setq indent-tabs-mode nil)
+;;             (setq write-contents-functions
+;;                   '(beautify-buffer))
+;;             (define-key jde-mode-map [f9] 'jde-debug-step-over)
+;;             (define-key jde-mode-map [f6] 'jde-debug-toggle-breakpoint)
+;;             (define-key jde-mode-map [f7] 'jde-debug-step-into)
+;;             (define-key jde-mode-map [f8] 'jde-debug-step-out)))
+
+(require 'completion)
+(dynamic-completion-mode)
+;(global-set-key (kbd "M-<return>") 'complete)
+
+(setq pcomplete-cycle-completions nil)
+
+(when (featurep 'aquamacs)
+  ;; open *help* in current frame
+  (setq special-display-regexps (remove "[ ]?\\*[hH]elp.*" special-display-regexps))
+  (one-buffer-one-frame-mode 0)
+  (setq x-select-enable-clipboard t)
+  (setq mac-command-modifier 'meta)
+  (setq mac-option-modifier 'alt))
+
+;; More eshell configuration
+(defun eshell/emacs (file)
+  (find-file file))
+(setq eshell-cmpl-cycle-completions nil)
+
+(defun eshell/info (subject)
+  "Read the Info manual on SUBJECT."
+  (let ((buf (current-buffer)))
+    (Info-directory)
+    (let ((node-exists (ignore-errors (Info-menu subject))))
+      (if node-exists
+          0
+        ;; We want to switch back to *eshell* if the requested
+        ;; Info manual doesn't exist.
+        (switch-to-buffer buf)
+        (eshell-print (format "There is no Info manual on %s.\n"
+                              subject))
+        1))))
+
+(defun tyler-eshell-view-file (file)
+  "A version of `view-file' which properly respects the eshell prompt."
+  (interactive "fView file: ")
+  (unless (file-exists-p file) (error "%s does not exist" file))
+  (let ((had-a-buf (get-file-buffer file))
+        (buffer (find-file-noselect file)))
+    (if (eq (with-current-buffer buffer (get major-mode 'mode-class))
+            'special)
+        (progn
+          (switch-to-buffer buffer)
+          (message "Not using View mode because the major mode is special"))
+      (let ((undo-window (list (window-buffer) (window-start)
+                               (+ (window-point)
+                                  (length (funcall eshell-prompt-function))))))
+        (switch-to-buffer buffer)
+        (view-mode-enter (cons (selected-window) (cons nil undo-window))
+                         'kill-buffer)))))
+
+(defun eshell/less (&rest args)
+  "Invoke `view-file' on a file. \"less +42 foo\" will go to line 42 in
+    the buffer for foo."
+  (while args
+    (if (string-match "\\`\\+\\([0-9]+\\)\\'" (car args))
+        (let* ((line (string-to-number (match-string 1 (pop args))))
+               (file (pop args)))
+          (tyler-eshell-view-file file)
+          (goto-line line))
+      (tyler-eshell-view-file (pop args)))))
+                                                                                                                        
+(defalias 'eshell/more 'eshell/less)
+(setq eshell-buffer-shorthand t)
+
+(prefer-coding-system 'utf-8)
+
+(require 'ecb)
+(setq ecb-source-path '("~/src/trunk" ("/" "/")))
+(setq ecb-layout-name "kkreamer-right")
+(setq ecb-tip-of-the-day nil)
+(custom-set-variables
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(ecb-options-version "2.32")
+ '(org-agenda-files (quote ("~/Notes/android.org"))))
+ 
+(setq ecb-windows-width 0.20)
+
+(setq ecb-compile-window-height 10)
+
+(load "~/.emacs.d/lisp/nxhtml/autostart.el")
+(setq nxhtml-skip-welcome t)
+
+(setq org-directory "~/Notes/")
+(setq org-mobile-directory "~/Dropbox/MobileOrg/")
+(setq org-mobile-inbox-for-pull "~/Notes/capture.org")
+(setq org-mobile-files '(org-agenda-files "~/Notes/android"))
+(setq org-mobile-force-id-on-agenda-items nil)
+(setq org-startup-indented t)
+(setq org-startup-folded nil)
+(setq org-todo-keywords (quote ((sequence "TODO(t)" "WAITING(w)" "SOMEDAY(s)" "|" "DONE(d)" "CANCELLED(c)")
+                                (sequence "MAYBE" "OK"))))
+
+(setq org-todo-keyword-faces
+      (quote (("TODO"      :foreground "red"          :weight bold)
+              ("DONE"      :foreground "forest green" :weight bold  :strike-through "forest green")
+              ("WAITING"   :foreground "orange"       :weight bold)
+              ("SOMEDAY"   :foreground "magenta"      :weight bold)
+              ("CANCELLED" :foreground "forest green" :weight bold)
+              ("??"        :foreground "cyan3"        :weight bold)
+              ("OK"        :foreground "cyan3" :weight bold))))
+
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ )
+
+
+(defun toggle-fullscreen (&optional f)
+  (interactive)
+  (let ((current-value (frame-parameter nil 'fullscreen)))
+    (set-frame-parameter nil 'fullscreen
+                         (if (equal 'fullboth current-value)
+                             (if (boundp 'old-fullscreen) old-fullscreen nil)
+                           (progn (setq old-fullscreen current-value)
+                                  'fullboth)))))
+(global-set-key [(control c) (control return)] 'toggle-fullscreen)
+
+(setq load-path (cons "~/.emacs.d/lisp/color-theme-6.6.0" load-path))
+(setq load-path (cons "~/.emacs.d/lisp/color-theme-6.6.0/themes" load-path))
+(require 'color-theme)
+
+(defun color-theme-kkreamer-dark ()
+  "Kevin Kreamer dark theme
+   Based on: White-on-Black by S. Pokrovsky."
+  (interactive)
+;  (setq term-default-fg-color "white"
+;	 term-default-bg "black")
+  (color-theme-install
+   '(color-theme-kkreamer-dark
+     ((foreground-color . "white")
+      (background-color . "black")
+      (mouse-color . "gold")
+      (cursor-color . "yellow")
+      (border-color . "black")
+      (background-mode . dark))
+   (default ((t (nil))))
+   (bold ((t (:bold t :foreground "light gray"))))
+   (bold-italic ((t (:italic t :bold t :foreground "cyan"))))
+   (calendar-today-face ((t (:underline t :foreground "white"))))
+   (custom-button-face ((t (nil))))
+   (custom-changed-face ((t (:background "blue" :foreground "white"))))
+   (custom-documentation-face ((t (nil))))
+   (custom-face-tag-face ((t (:underline t))))
+   (custom-group-tag-face ((t (:underline t))))
+   (custom-group-tag-face-1 ((t (:underline t))))
+   (custom-invalid-face ((t (:background "red" :foreground "white"))))
+   (custom-modified-face ((t (:background "blue" :foreground "white"))))
+   (custom-rogue-face ((t (:background "black" :foreground "pink"))))
+   (custom-saved-face ((t (:underline t))))
+   (custom-set-face ((t (:background "white" :foreground "blue"))))
+   (custom-state-face ((t (nil))))
+   (custom-variable-button-face ((t (:underline t :bold t))))
+   (custom-variable-tag-face ((t (:underline t))))
+   (diary-face ((t (:foreground "gold"))))
+   (font-lock-builtin-face ((t (:foreground "cyan3"))))
+   (font-lock-comment-face ((t (:foreground "grey70")))) ;; this is a comment
+   (font-lock-constant-face ((t (:bold t :foreground "LightSteelBlue"))))
+   (font-lock-function-name-face ((t (:foreground "tomato2"))))
+   (font-lock-keyword-face ((t (:foreground "seagreen3"))))
+   (font-lock-string-face ((t (:foreground "gold2"))))
+   (font-lock-type-face ((t (:foreground "deep sky blue"))))
+   (font-lock-variable-name-face ((t (:foreground "spring green"))))
+   (font-lock-warning-face ((t (:bold t :foreground "Pink"))))
+   (gnus-cite-attribution-face ((t (:underline t :foreground "beige"))))
+   (gnus-cite-face-1 ((t (:foreground "gold"))))
+   (gnus-cite-face-10 ((t (:foreground "coral"))))
+   (gnus-cite-face-11 ((t (:foreground "turquoise"))))
+   (gnus-cite-face-2 ((t (:foreground "wheat"))))
+   (gnus-cite-face-3 ((t (:foreground "light pink"))))
+   (gnus-cite-face-4 ((t (:foreground "khaki"))))
+   (gnus-cite-face-5 ((t (:foreground "pale green"))))
+   (gnus-cite-face-6 ((t (:foreground "beige"))))
+   (gnus-cite-face-7 ((t (:foreground "orange"))))
+   (gnus-cite-face-8 ((t (:foreground "magenta"))))
+   (gnus-cite-face-9 ((t (:foreground "violet"))))
+   (gnus-emphasis-bold ((t (:bold t :foreground "light gray"))))
+   (gnus-emphasis-bold-italic ((t (:italic t :bold t :foreground "cyan"))))
+   (gnus-emphasis-highlight-words ((t (:background "black" :foreground "gold"))))
+   (gnus-emphasis-italic ((t (:italic t :foreground "cyan"))))
+   (gnus-emphasis-underline ((t (:underline t :foreground "white"))))
+   (gnus-emphasis-underline-bold ((t (:underline t :bold t :foreground "white"))))
+   (gnus-emphasis-underline-bold-italic ((t (:underline t :italic t :bold t :foreground "white"))))
+   (gnus-emphasis-underline-italic ((t (:underline t :italic t :foreground "white"))))
+   (gnus-group-mail-1-empty-face ((t (:foreground "Magenta"))))
+   (gnus-group-mail-1-face ((t (:bold t :foreground "Magenta"))))
+   (gnus-group-mail-2-empty-face ((t (:foreground "aquamarine2"))))
+   (gnus-group-mail-2-face ((t (:bold t :foreground "aquamarine2"))))
+   (gnus-group-mail-3-empty-face ((t (:foreground "Cyan"))))
+   (gnus-group-mail-3-face ((t (:bold t :foreground "Cyan"))))
+   (gnus-group-mail-low-empty-face ((t (:foreground "Wheat"))))
+   (gnus-group-mail-low-face ((t (:foreground "aquamarine4"))))
+   (gnus-group-news-1-empty-face ((t (:foreground "PaleTurquoise"))))
+   (gnus-group-news-1-face ((t (:bold t :foreground "PaleTurquoise"))))
+   (gnus-group-news-2-empty-face ((t (:foreground "turquoise"))))
+   (gnus-group-news-2-face ((t (:bold t :foreground "turquoise"))))
+   (gnus-group-news-3-empty-face ((t (:foreground "wheat"))))
+   (gnus-group-news-3-face ((t (:bold t :foreground "Wheat"))))
+   (gnus-group-news-4-empty-face ((t (nil))))
+   (gnus-group-news-4-face ((t (:bold t))))
+   (gnus-group-news-5-empty-face ((t (nil))))
+   (gnus-group-news-5-face ((t (:bold t))))
+   (gnus-group-news-6-empty-face ((t (nil))))
+   (gnus-group-news-6-face ((t (:bold t))))
+   (gnus-group-news-low-empty-face ((t (:foreground "MediumAquamarine"))))
+   (gnus-group-news-low-face ((t (:bold t :foreground "MediumAquamarine"))))
+   (gnus-header-content-face ((t (:italic t :foreground "Wheat"))))
+   (gnus-header-from-face ((t (:foreground "light yellow"))))
+   (gnus-header-name-face ((t (:foreground "Wheat"))))
+   (gnus-header-newsgroups-face ((t (:italic t :foreground "gold"))))
+   (gnus-header-subject-face ((t (:bold t :foreground "Gold"))))
+   (gnus-signature-face ((t (:italic t :foreground "white"))))
+   (gnus-splash-face ((t (:foreground "orange"))))
+   (gnus-summary-cancelled-face ((t (:background "black" :foreground "orange"))))
+   (gnus-summary-high-ancient-face ((t (:bold t :foreground "SkyBlue"))))
+   (gnus-summary-high-read-face ((t (:bold t :foreground "red"))))
+   (gnus-summary-high-ticked-face ((t (:bold t :foreground "coral"))))
+   (gnus-summary-high-unread-face ((t (:bold t :foreground "gold"))))
+   (gnus-summary-low-ancient-face ((t (:italic t :foreground "SkyBlue"))))
+   (gnus-summary-low-read-face ((t (:italic t :foreground "red"))))
+   (gnus-summary-low-ticked-face ((t (:italic t :foreground "coral"))))
+   (gnus-summary-low-unread-face ((t (:italic t :foreground "white"))))
+   (gnus-summary-normal-ancient-face ((t (:foreground "SkyBlue"))))
+   (gnus-summary-normal-read-face ((t (:foreground "PaleGreen"))))
+   (gnus-summary-normal-ticked-face ((t (:foreground "pink"))))
+   (gnus-summary-normal-unread-face ((t (:foreground "white"))))
+   (gnus-summary-selected-face ((t (:underline t :foreground "white"))))
+   (highlight ((t (:background "Blue" :foreground "white"))))
+   (highline-face ((t (:background "dark slate gray" :foreground "white"))))
+   (holiday-face ((t (:background "red" :foreground "white"))))
+   (info-menu-5 ((t (:underline t))))
+   (info-node ((t (:italic t :bold t :foreground "white"))))
+   (info-xref ((t (:bold t :foreground "light gray"))))
+   (italic ((t (:italic t :foreground "cyan"))))
+   (makefile-space-face ((t (:background "hotpink" :foreground "white"))))
+   (message-cited-text-face ((t (:foreground "green"))))
+   (message-header-cc-face ((t (:bold t :foreground "Aquamarine"))))
+   (message-header-name-face ((t (:foreground "Gold"))))
+   (message-header-newsgroups-face ((t (:italic t :bold t :foreground "gold"))))
+   (message-header-other-face ((t (:foreground "lightGray"))))
+   (message-header-subject-face ((t (:foreground "Yellow"))))
+   (message-header-to-face ((t (:bold t :foreground "green2"))))
+   (message-header-xheader-face ((t (:foreground "sky blue"))))
+   (message-mml-face ((t (:bold t :foreground "khaki"))))
+   (message-separator-face ((t (:background "aquamarine" :foreground "black"))))
+   (modeline ((t (:background "dark red" :foreground "white"))))
+;   (modeline-buffer-id ((t (:background "dark gray" :foreground "black"))))
+;   (modeline-mousable ((t (:background "dark gray" :foreground "black"))))
+;   (modeline-mousable-minor-mode ((t (:background "dark gray" :foreground "black"))))
+   (paren-mismatch-face ((t (:bold t :background "white" :foreground "red"))))
+   (paren-no-match-face ((t (:bold t :background "white" :foreground "red"))))
+   (region ((t (:italic t :background "grey10"))))
+   (secondary-selection ((t (:background "Sienna" :foreground "white"))))
+   (show-paren-match-face ((t (:background "purple" :foreground "white"))))
+   (show-paren-mismatch-face ((t (:bold t :background "white" :foreground "red"))))
+   (speedbar-button-face ((t (nil))))
+   (speedbar-directory-face ((t (nil))))
+   (speedbar-file-face ((t (:bold t))))
+   (speedbar-highlight-face ((t (nil))))
+   (speedbar-selected-face ((t (:underline t))))
+   (speedbar-tag-face ((t (nil))))
+   (swbuff-current-buffer-face ((t (:bold t :foreground "red"))))
+   (underline ((t (:underline t :foreground "white"))))
+   (widget-button-face ((t (:bold t :foreground "coral"))))
+   (widget-button-pressed-face ((t (:foreground "red"))))
+   (widget-documentation-face ((t (:foreground "lime green"))))
+   (widget-field-face ((t (:background "dim gray" :foreground "white"))))
+   (widget-inactive-face ((t (:foreground "light gray"))))
+   (widget-single-line-field-face ((t (:background "dim gray" :foreground "white")))))))
+
+(setq color-theme-is-global t)
+(color-theme-kkreamer-dark)
+
+(global-set-key [(meta =)] 'goto-match-paren)
+
+(require 'layout-restore)
+;; save layout key
+(global-set-key [?\C-c ?l] 'layout-save-current)
+;; load layout key
+(global-set-key [?\C-c ?\C-l ?\C-l] 'layout-restore)
+;; cancel(delete) layout key
+(global-set-key [?\C-c ?\C-l ?\C-c] 'layout-delete-current)
+
+(require 'pointback)
+(global-pointback-mode)
+
+(setq split-width-threshold nil)
+(setq even-window-heights nil)
+
+(setq browse-url-browser-function 'browse-url-generic
+      browse-url-generic-program "chromium-browser")

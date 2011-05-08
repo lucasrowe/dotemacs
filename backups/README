@@ -1,0 +1,9 @@
+I want all backups consolidated into this directory.
+
+This README is here to both tell you the above, as well as tell git that
+I want what would otherwise be an empty directory checked into the
+repository.
+
+For more info see the git FAQ about empty directories:
+https://git.wiki.kernel.org/index.php/GitFaq#Can_I_add_empty_directories.3F
+
