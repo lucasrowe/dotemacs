@@ -7,7 +7,8 @@ How To Use
 
 1. Check out the newest version into $HOME/.emacs.d
 
-   FIXME: add in git clone command using github
+   cd $HOME
+   git clone git@github.com:kkreamer/dotemacs.git .emacs.d
 
 2. Link $HOME/.emacs to $HOME/.emacs.d/config
 
