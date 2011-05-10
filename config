@@ -100,6 +100,7 @@
 
                 ;; Buffer identification
                 "%12b"
+                " "
 
                 ;; Position
                 (10 "%p")
