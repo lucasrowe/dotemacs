@@ -52,11 +52,11 @@
 ;; startup size and location
 (if window-system
     (setq default-frame-alist 
-          '((width . 140)
-            (height . 40)
+          '((width . 200)
+            (height . 120)
             (top . 0)
             (left . 0)
-            (cursor-color . "yellow"))))
+            (cursor-color . "cyan"))))
 
 (menu-bar-mode -1)
 
@@ -75,6 +75,35 @@
 ;; eshell
 (setq eshell-directory-name "~/.emacs.d/eshell/")
 
+;; Flymake uses pylint for .py files (syntax checking)
+(when (load "flymake" t)
+  (defun flymake-pylint-init ()
+    (let* ((temp-file (flymake-init-create-temp-buffer-copy
+                            'flymake-create-temp-inplace))
+       (local-file (file-relative-name
+                    temp-file
+                    (file-name-directory buffer-file-name))))
+       (list "epylint" (list local-file))))
+
+    (add-to-list 'flymake-allowed-file-name-masks
+             '("\\.py\\'" flymake-pylint-init)))
+
+(add-hook 'find-file-hook 'flymake-find-file-hook)
+
+; Get proper env... OS X Fix?
+(defun set-exec-path-from-shell-PATH ()
+    (let ((path-from-shell (replace-regexp-in-string
+          "[ \t\n]*$"
+          ""
+          (shell-command-to-string "$SHELL --login -i -c 'echo $PATH'"))))
+    (setenv "PATH" path-from-shell)
+    (setq exec-path (split-string path-from-shell path-separator))))
+
+(when (and window-system (eq system-type 'darwin))
+    ;; When started from Emacs.app or similar, ensure $PATH
+    ;; is the same the user would see in Terminal.app
+    (set-exec-path-from-shell-PATH))
+
 ;; dired
 (require 'dired)
 
@@ -88,6 +117,7 @@
 (setq font-lock-verbose nil)
 (setq font-lock-auto-fontify t)
 (setq font-lock-maximum-size nil)
+
 
 ;; turn on automagic (de)compression
 (auto-compression-mode 1)
@@ -204,7 +234,7 @@
 (require 'color-theme)
 (color-theme-initialize)
 (setq color-theme-is-global t)
-(color-theme-classic)
+(color-theme-tangotango)
 
 ;; Layout Preferences
 (require 'layout-restore)

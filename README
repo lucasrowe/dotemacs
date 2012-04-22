@@ -18,11 +18,12 @@ How To Use
 
    $ emacs &
 
+4. For flymake to be able to do python syntax-checking: 
+   
+   pip install pylint
 
 Legalese
 ========
-
-Copyright (c) 2011 Kevin Kreamer <kevin@kreamer.org>
 
 This project is free software; you can redistribute it and/or modify
 it under the terms of version 2 of the GNU General Public License as
